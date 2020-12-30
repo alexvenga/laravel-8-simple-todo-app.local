@@ -19,31 +19,50 @@ class TodoController extends Controller
         return view('create');
     }
 
-    public function details()
+    public function details(Todo $todo)
     {
 
-        return view('details');
+        return view('details')->with('todos', $todo);
 
     }
 
-    public function edit()
+    public function edit(Todo $todo)
     {
 
-        return view('edit');
+        return view('edit')->with('todos', $todo);
 
     }
 
-    public function update()
+    public function update(Todo $todo)
     {
 
-        //we will write codes for updating a todo here
+        try {
+            $this->validate(request(), [
+                'name' => ['required'],
+                'description' => ['required'],
+
+            ]);
+        } catch (ValidationException $e) {
+        }
+
+        $data = request()->all();
+
+
+        $todo->name = $data['name'];
+        $todo->description = $data['description'];
+        $todo->save();
+
+        session()->flash('success', 'Todo updated successfully');
+
+        return redirect('/');
 
     }
 
-    public function delete()
-    {
+    public function delete(Todo $todo){
 
-        //we will write codes for deleting a todo here
+        $todo->delete();
+
+        return redirect('/');
 
     }
 
